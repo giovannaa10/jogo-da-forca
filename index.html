@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Forca</title>
+    <!-- Liga o HTML ao style.css na pasta static -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Jogo da Forca</h1>
+
+        <!-- Desenho Simples do Boneco -->
+        <div class="forca-container">
+            <svg height="200" width="160">
+                <line x1="20" y1="180" x2="100" y2="180" stroke="#778da9" stroke-width="4" />
+                <line x1="60" y1="180" x2="60" y2="20" stroke="#778da9" stroke-width="4" />
+                <line x1="60" y1="20" x2="120" y2="20" stroke="#778da9" stroke-width="4" />
+                <line x1="120" y1="20" x2="120" y2="40" stroke="#778da9" stroke-width="4" />
+
+                {% if erros >= 1 %}<circle cx="120" cy="55" r="15" stroke="#e0e1dd" stroke-width="4" fill="none" />{% endif %}
+                {% if erros >= 2 %}<line x1="120" y1="70" x2="120" y2="120" stroke="#e0e1dd" stroke-width="4" />{% endif %}
+                {% if erros >= 3 %}<line x1="120" y1="85" x2="95" y2="105" stroke="#e0e1dd" stroke-width="4" />{% endif %}
+                {% if erros >= 4 %}<line x1="120" y1="85" x2="145" y2="105" stroke="#e0e1dd" stroke-width="4" />{% endif %}
+                {% if erros >= 5 %}<line x1="120" y1="120" x2="95" y2="155" stroke="#e0e1dd" stroke-width="4" />{% endif %}
+                {% if erros >= 6 %}<line x1="120" y1="120" x2="145" y2="155" stroke="#e0e1dd" stroke-width="4" />{% endif %}
+            </svg>
+        </div>
+
+        <!-- Exibe os Tracinhos/Letras -->
+        <div class="palavra-container">
+            {% for letra in letras_descobertas %}
+                <span class="letra-box">{{ letra }}</span>
+            {% endfor %}
+        </div>
+
+        <!-- Informações de Erros -->
+        <p class="info">Erros: {{ erros }} de {{ max_erros }}</p>
+        {% if letras_erradas %}
+            <p class="info-erradas">Erradas: {{ letras_erradas | join(', ') }}</p>
+        {% endif %}
+
+        <!-- Mensagens de Vitória / Derrota ou Campo para Jogar -->
+        {% if venceu %}
+            <div class="mensagem vitoria">
+                <h2>Parabéns! Ganhaste! 🎉</h2>
+                <form action="/reiniciar" method="POST">
+                    <button type="submit">Jogar De Novo</button>
+                </form>
+            </div>
+        {% elif perdeu %}
+            <div class="mensagem derrota">
+                <h2>Game Over! A palavra era: {{ palavra }} 😞</h2>
+                <form action="/reiniciar" method="POST">
+                    <button type="submit">Tentar De Novo</button>
+                </form>
+            </div>
+        {% else %}
+            <form action="/jogar" method="POST" class="form-jogada">
+                <input type="text" name="letra" maxlength="1" autofocus required autocomplete="off">
+                <button type="submit">Enviar Letra</button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>
